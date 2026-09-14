@@ -17,3 +17,5 @@ create a system where audio is created and saved on everyones laptop according t
 webapp getiing crashed on enabling on retry schedule section in retell compaign
 
 i imported test data and added multiple numbers in DNC then selected DNC from select list in leads tabs in Retell Compaign but its not showing DNC flagged numbbers.
+
+also add a select all states check in while creating a new user
