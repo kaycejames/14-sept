@@ -10,3 +10,10 @@ No data according to vendors is showing
 sessions should be shown to userwise and only admin can see sessions with daily wekkly and monthly filters
 
 my laptop is connected with wifi not with LAN this we app is not opening with url on my other laptops
+
+create a system where audio is created and saved on everyones laptop according to user and on admin dashoard save for everyone forexample bot dialed a call and ready for transfer to the verifier when verifier accepts the call then it should start recording and whn verifier transferrs the call to the lisence agent then audio should be saved on the verifier's laptop and now lisence agent sessio n starts now when lisence agent closes the call it should be saved on lisence agent and for admins laptop there should be 2 folders verifiers and LisenceAgent verifiers calls should be saved on verifiers folder lisence agent calls should be save on lisence agent folder and there should be another folder approved sale if the sale is made then recording should be saved on that folder . every recording should be saved with customer name and number and username of verifier or lisence agent so it can easy for tracking
+
+
+webapp getiing crashed on enabling on retry schedule section in retell compaign
+
+i imported test data and added multiple numbers in DNC then selected DNC from select list in leads tabs in Retell Compaign but its not showing DNC flagged numbbers.
