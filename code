@@ -1,0 +1,45 @@
+Mac par (Terminal kholein)
+
+Zip extract karne ke baad:
+
+cd ~/Desktop/final-expense-app
+npm install
+npm run build
+nano .env
+
+.env mein ye likhein:
+
+HOST=0.0.0.0
+PORT=5180
+
+Ctrl+O, Enter, Ctrl+X se save.
+
+Phir:
+
+npm test
+npm start
+
+(cd ka path wahi likhein jahan extract kiya. Agar Node install nahi to pehle nodejs.org se LTS lein.)
+
+Start hote hi terminal mein teen URL dikhenge — Claude Code ne ye feature banaya tha:
+
+On this machine: http://localhost:5180
+From other machines: http://<Mac-ka-naam>.local:5180
+From other machines (if the name fails): http://192.168.x.x:5180
+
+Baqi laptops par
+
+Bas browser mein wo doosra URL kholein, jaise http://Kayce-MacBook.local:5180. Kuch install nahi karna. Har banda apne account se login karega.
+
+Agar .local wala naam Windows laptops par na chale to teesra wala (IP) use karein.
+
+Kuch cheezein pehli baar Mac par:
+
+Firewall permission ka popup aayega — Allow dabayein.
+Mac ka naam dekhne ke liye: System Settings → General → Sharing → "Local hostname".
+Mac sota na rahe: System Settings → Battery → charger par "Prevent automatic sleeping" on.
+Sab laptops ek hi WiFi par hon.
+
+Yaad rahe: Mac par database khali hoga. Users, passwords, appointed states, questions — sab naye se set karne honge. docs/LAN_SETUP.md mein baqi tafseel hai (backup, auto-start).
+
+Terminal band karne se server band ho jayega. Us ko background mein chalane ka tareeqa LAN_SETUP.md mein hai.
