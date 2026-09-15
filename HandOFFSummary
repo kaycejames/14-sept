@@ -1,0 +1,89 @@
+# Final Expense AI Calling System — Handoff Summary
+
+Paste this at the start of a new chat to bring Claude up to speed.
+
+---
+
+## What I'm building
+
+An AI cold-calling system for a Final Expense (burial life insurance) campaign in the US, plus the CRM around it. An AI bot dials leads, qualifies them, and transfers live calls to a human verifier, who then hands off to a licensed agent who closes the sale.
+
+I'm a small business owner, not an engineer. I use Claude Code in VS Code on my office Windows PC to build, and I speak Roman Urdu. Please reply in Roman Urdu.
+
+## The shape of the system
+
+Three parts:
+
+1. **Retell AI** (cloud) — holds the voice agent "Sarah" and places the calls. Agent ID `agent_1106515681f404064d0d5c008e`. Single-prompt agent, Kate voice, GPT-4.1, voicemail detection on with hang-up, `end_call` and `transfer_call` functions configured.
+2. **My app** — a local web app that does everything else: leads, compliance, the dialer scheduler, the webhook receiver, the CRM, the verifier and closer workspaces, recordings, and analytics. Node + Fastify + React + SQLite, encrypted PII.
+3. **The people** — verifiers take the bot's transfers; licensed agents (closers) take the verifier's handoffs and record the outcome.
+
+Originally the dialer was a separate Python project at `E:\Agent`. It has been fully rebuilt inside the app in TypeScript and retired — one system, one database, one screen.
+
+## Where the code lives
+
+- Office Windows PC: `E:\final-expense-app` — this is where Claude Code builds. Server runs on `localhost:5180`, restart with `npm run restart`.
+- MacBook: the app runs here as the LAN server for the office. Code is moved PC → Mac as a zip (or via GitHub; git is now initialised).
+- Claude Code only runs on the office PC — my paid access is there. The Mac just runs the app.
+
+## What is built and working
+
+- **Leads**: CSV/XLSX import with preview, phone normalisation to E.164, dedup, consent fields, import batches as first-class objects with multi-batch selection and outcome filters, admin-only filtered CSV export.
+- **Compliance**: federal DNC import, internal DNC, per-state calling hours (all 51 jurisdictions ship as unreviewed placeholders), `scrub()` gate that no path can bypass.
+- **Dialer**: scheduler triggering Retell calls, caller ID rotation, concurrency and daily caps, a daypart-rotating retry ladder, paused by default after every restart.
+- **Webhook**: signature-verified, idempotent, handles out-of-order events, maps dispositions, auto-adds do-not-call requests, creates the customer and session on transfer.
+- **Verifier workspace**: 16-question checklist, transfer readiness gate, AI pre-fill suggestions kept separate from confirmed answers.
+- **Closer workspace**: My Queue with a "Take this call" button visible to every eligible agent, atomic claim lock, appointed-states enforcement, floor-wide banner naming who is on a call, waiting-age badges, outcome capture including "application submitted → pending carrier → approved/declined".
+- **Sessions**: scoped per user; admin sees everyone with day/week/month and per-person filters, enforced server-side across six channels.
+- **Dashboard**: campaign tiles counting every source, a dialer-scoped funnel, per-user tables measured against the team median (never "best/worst" labels), sample sizes beside every rate.
+- **Analytics**: contact rate by day/hour in the lead's timezone, caller ID health vs each number's own baseline, speed to lead, cost per acquisition by vendor. Costs are stamped when they happen, never recomputed.
+- **Recordings**: stored server-side in dated folders split by verifiers / licensed agents / approved sales, filenames use customer name + last four digits of phone + username, per-user access enforced server-side.
+- **Operational**: live websocket updates that never clear a form being typed in, presence warnings, auto-release of sessions held by a disconnected agent after a 3-minute grace period, admin force-release, git history, a linter, 20 test suites.
+- **Login page**: dark lamp scene with a pull cord that reveals the sign-in card.
+
+## Audit already done
+
+A seven-pass pre-launch audit found and fixed 7 blockers, 16 serious and 7 minor issues. `docs/PRE_LAUNCH.md` holds the full record and the go-live checklist. The worst finding: the app had two canonical phone formats and didn't know it, so one person could become two un-matchable records — dangerous for a DNC-sensitive business. Migration 010 repaired it. A later pass found that `sessions:get` was returning any session to any authenticated caller by sequential id, and the export was built on that read.
+
+## Decisions already made — please don't reverse these without asking
+
+- Re-pooling leads **grants** extra attempts, never resets `attempts_count` — that count is a compliance record of how many times a real person was telephoned.
+- Campaign tiles count every source; only the funnel is scoped to dialer-originated calls.
+- Rates are never computed from samples too small to mean anything; users are compared against the team median, never ranked as best/worst.
+- Nothing bypasses `scrub()` — no bulk action, no callback, no manual dial.
+- Caller IDs live in their own table so a number can be retired without losing its history.
+- Recording filenames use the last four digits of the phone, not the full number.
+- Every prompt to Claude Code must end with an instruction to test and verify in the real browser and reconcile on-screen numbers against the database.
+
+## Still outstanding
+
+**Needs code (not blocking):**
+- Recording consent disclosure by state, wired into the bot prompt.
+- Data retention purge (`dataRetentionDays` exists but drives nothing; currently 0).
+- Licence expiry warnings and blocking.
+- Transfer failure handling — what happens when nobody picks up.
+- TCPA litigator scrub as a third suppression list.
+- Recording the human legs of the call (verifier and closer). Only the bot leg is recorded today. The plan is to try Retell/Twilio recording the full call after transfer once a real number exists; a softphone is the fallback. VICIdial is **not** needed — the app scales to 5+ agents fine, because the bot does the dialing.
+
+**Needs me (blocking go-live):**
+- Replace the 37 placeholder questions, 14 scripts and 8 objections with my agency's real approved script.
+- Set appointed states on every licensed agent — without them the queue silently shows nothing (this has confused me twice already).
+- Passwords on all accounts.
+- DNC registry account and list (telemarketing.donotcall.gov).
+- Lead vendor consent proof and an attribution-window agreement.
+- Attorney review of calling hours and recording consent.
+- Buy a Retell number (~$2/month), link it to the agent, set the transfer number, and configure a stable webhook URL (ngrok changes on every restart — Cloudflare Tunnel is the likely fix).
+- Fill in the AI cost per minute and the per-vendor lead costs.
+- First real calls must be to numbers I own, never a customer list.
+
+## Open problem
+
+My other laptops on the same WiFi cannot open the app from the Mac, even with `HOST=0.0.0.0` set. Not yet diagnosed — likely the macOS firewall, the `.local` hostname failing from Windows, or router client isolation. I have a diagnostic prompt to work through.
+
+## Economics, for context
+
+Roughly $0.08–0.15 per connected minute all-in. At 50 calls/day that's about $5–6/day; at 300 calls/day about $30–35/day. A single approved policy typically pays $500–1,000 in commission, so the calling cost is small relative to one sale.
+
+## Legal framing I've already been told
+
+AI-voice calls fall under the TCPA's rules for artificial/prerecorded voices, so they need prior express written consent for cell numbers, and consent given to a lead generator generally doesn't transfer to me. Purchased and aged lists are the risky case. I need documented consent per lead, monthly DNC refreshes, and an attorney's review before running a real campaign. Claude is not my lawyer and should keep saying so.
