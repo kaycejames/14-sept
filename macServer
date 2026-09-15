@@ -1,0 +1,12 @@
+My app runs on my MacBook and serves on port 5180. Other laptops on the same WiFi cannot open it in a browser — only the Mac itself can. I have already set HOST=0.0.0.0 in .env and saved it.
+
+Diagnose this step by step and tell me exactly what to run and what the output means:
+
+1. Confirm the .env file is actually being read: check it exists in the right folder, is named .env and not .env.txt, and that the running server is actually bound to 0.0.0.0 and not 127.0.0.1. Show me how to verify what the process is really listening on.
+2. Show me what the server prints on startup and whether it is advertising the LAN URLs.
+3. Tell me my Mac's LAN IP address and have me try that IP from the other laptop rather than the .local hostname, since .local often fails from Windows.
+4. Check whether the macOS firewall is blocking incoming connections, and how to allow Node specifically rather than turning the firewall off entirely.
+5. Tell me how to distinguish which side is at fault: something I can run on the Mac to prove the port is open and reachable, and something I can run on the other laptop to prove whether the connection is refused, timing out, or being blocked.
+6. Rule out the router: tell me how to check whether AP isolation or client isolation is on, and confirm whether I am on a guest network.
+
+Give me the commands in the order I should run them, with what a good result and a bad result look like at each step, so I can work through it myself and know where it fails.
