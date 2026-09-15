@@ -19,3 +19,7 @@ webapp getiing crashed on enabling on retry schedule section in retell compaign
 i imported test data and added multiple numbers in DNC then selected DNC from select list in leads tabs in Retell Compaign but its not showing DNC flagged numbbers.
 
 also add a select all states check in while creating a new user
+-------
+
+AI agent should be trained after getting each call
+dowload button should be enabled for every sale closed or if customer submitted his bank account then download button should bbe enabled and can be download in a csv file
