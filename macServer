@@ -1,12 +1,53 @@
-My app runs on my MacBook and serves on port 5180. Other laptops on the same WiFi cannot open it in a browser — only the Mac itself can. I have already set HOST=0.0.0.0 in .env and saved it.
+Samajh gaya. Asal maqsad simple hai, to seedha raasta deta hoon. Ye kaam aap laptop par khud abhi kar sakte hain, Claude Code ka intezar kiye baghair. Sirf teen cheezein raasta rokti hain: app sirf apne liye sun rahi ho, Windows Firewall, aur laptop ka so jaana.
 
-Diagnose this step by step and tell me exactly what to run and what the output means:
+1. App ko network par kholein
 
-1. Confirm the .env file is actually being read: check it exists in the right folder, is named .env and not .env.txt, and that the running server is actually bound to 0.0.0.0 and not 127.0.0.1. Show me how to verify what the process is really listening on.
-2. Show me what the server prints on startup and whether it is advertising the LAN URLs.
-3. Tell me my Mac's LAN IP address and have me try that IP from the other laptop rather than the .local hostname, since .local often fails from Windows.
-4. Check whether the macOS firewall is blocking incoming connections, and how to allow Node specifically rather than turning the firewall off entirely.
-5. Tell me how to distinguish which side is at fault: something I can run on the Mac to prove the port is open and reachable, and something I can run on the other laptop to prove whether the connection is refused, timing out, or being blocked.
-6. Rule out the router: tell me how to check whether AP isolation or client isolation is on, and confirm whether I am on a guest network.
+D:\final-expense-app\.env file Notepad mein kholein. Agar HOST=127.0.0.1 likha hai to usay badal kar ye karein:
 
-Give me the commands in the order I should run them, with what a good result and a bad result look like at each step, so I can work through it myself and know where it fails.
+HOST=0.0.0.0
+
+Save karein aur app band karke dobara chalayein, jaise aap chalate hain.
+
+2. Check karein ke sun rahi hai
+
+Normal PowerShell mein:
+
+netstat -ano | findstr 5180
+
+0.0.0.0:5180 ... LISTENING aana chahiye. Agar abhi bhi 127.0.0.1:5180 aaye to ruk jayein aur output yahan bhejein.
+
+3. Firewall kholein (Administrator PowerShell)
+
+Start menu mein "PowerShell" likhein, right-click karke "Run as administrator". Phir pehle ye:
+
+Get-NetConnectionProfile
+
+Agar NetworkCategory mein Public likha ho, to usay Private karein (Wi-Fi ki jagah wo naam likhein jo InterfaceAlias mein aaya):
+
+Set-NetConnectionProfile -InterfaceAlias "Wi-Fi" -NetworkCategory Private
+
+Phir port kholein:
+
+New-NetFirewallRule -DisplayName "Final Expense App 5180" -Direction Inbound -Protocol TCP -LocalPort 5180 -Action Allow -Profile Private
+
+4. Doosre laptop se test
+
+Kisi doosre laptop ke browser mein:
+
+http://10.120.19.237:5180
+
+Login page khul jaye to kaam ho gaya.
+
+5. Server ko sone na dein
+
+Settings → System → Power: jab charger laga ho tab screen aur sleep dono "Never" kar dein. Aur Control Panel → Power Options → "Choose what closing the lid does" mein "When plugged in" ke liye Do nothing. Laptop charger par hi rakhein.
+
+Agar step 4 par na khule
+
+Doosre Windows laptop par PowerShell mein ye chalayein:
+
+Test-NetConnection 10.120.19.237 -Port 5180
+
+Agar TcpTestSucceeded : True aaye to masla browser ka hai. Agar False aaye aur upar ke sab steps theek hain, to shayad router laptops ko aapas mein baat nahi karne deta (client isolation). Wo router ki setting hai, us ka output yahan bhej dein.
+
+Ek aakhri baat: 10.120.19.237 abhi ka IP hai, router kabhi kabhi badal deta hai. Agar kisi din sab ka URL achanak band ho jaye to pehle laptop ka IP check karein. Pakka hal router mein us laptop ka IP "reserve" karna hai, wo baad mein kar lenge.
