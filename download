@@ -1,0 +1,5 @@
+winget install ngrok.ngrok
+
+  ngrok config add-authtoken 3JdPnRu4ijawlwGzTpw5MxHTLUb_574uoaiR1FVasofGBJWsJ
+
+  ngrok config check
