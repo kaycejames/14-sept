@@ -1,0 +1,38 @@
+Office PC par ngrok band karna
+
+Jis window mein ngrok chal raha hai, us mein Ctrl + C dabayein, phir window band kar dein. Isi tarah npm start wali window mein bhi Ctrl + C.
+
+Agar ngrok ki koi window nazar na aaye (kyunki Claude Code ne background mein chalaya tha), to PowerShell mein:
+
+taskkill /IM ngrok.exe /F
+
+"SUCCESS" aaye to band ho gaya.
+
+Laptop par ngrok lagana
+
+1. Download: browser mein ngrok.com/download kholein, Windows chunein aur zip download karein. Sirf official site se.
+
+2. Jagah: D:\tools\ngrok naam ka folder banayein aur zip ke andar wali ngrok.exe wahan nikaal dein. Isay D:\final-expense-app ya D:\final-expense-data ke andar na rakhein. Agar Windows "unknown app" jaisi warning de, to "More info → Run anyway", kyunki ye official file hai.
+
+3. Token (ek dafa), PowerShell mein:
+
+& "D:\tools\ngrok\ngrok.exe" config add-authtoken APNA-TOKEN
+
+4. Chalana: pehle ek window mein app:
+
+cd D:\final-expense-app
+npm start
+
+Phir doosri window mein ngrok:
+
+& "D:\tools\ngrok\ngrok.exe" http 5181 --url=lumpiness-alienate-coveting.ngrok-free.dev
+
+Screen par "Session Status: online" aana chahiye. Ye window khuli rehni chahiye.
+
+5. Check (teesri window mein):
+
+Invoke-WebRequest "https://lumpiness-alienate-coveting.ngrok-free.dev/api/retell/webhook" -Headers @{ "ngrok-skip-browser-warning" = "1" } -UseBasicParsing | Select-Object StatusCode, Content
+
+200 aana chahiye. Phir Retell mein webhook Test dabayein.
+
+Path set karna zaroori nahi. Upar ke commands mein poora raasta (D:\tools\ngrok\ngrok.exe) likha hai, to wo kahin se bhi chal jayenge.
