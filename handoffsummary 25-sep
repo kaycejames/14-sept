@@ -1,0 +1,107 @@
+# Final Expense AI Calling System — Handoff Summary
+
+Paste this at the start of a new chat to bring Claude up to speed. Replaces all earlier handoffs.
+
+---
+
+## What I'm building
+
+An AI cold-calling system for a Final Expense (burial life insurance) campaign in the US, plus the CRM around it. An AI bot dials leads, qualifies them, and transfers live calls to a human verifier, who then hands off to a licensed agent who closes the sale.
+
+I'm a small business owner, not an engineer. I use Claude Code in VS Code on my office Windows PC to build, and I speak Roman Urdu. Please reply in Roman Urdu.
+
+**A principle I care about:** I must be able to run and change this system myself, from the admin screens, without Claude Code. Assume I may not have it next month. Anything an owner would reasonably want to change should be an admin setting, not buried in code.
+
+## The shape of the system
+
+1. **Retell AI** (cloud) — holds the voice agent "Sarah" and places the calls. Agent ID `agent_1106515681f404064d0d5c008e`, workspace "Smart". Kate voice, voicemail detection with hang-up, IVR hangup on, `end_call` and `transfer_call` configured. Model currently Claude 5 Sonnet (~$0.152/min); GPT-4.1 (~$0.13/min all-in) is worth testing as a cheaper swap. Call settings: end call on silence 31s, max call duration 9.1 min, ring duration 30s.
+2. **My app** — the CRM and everything else: leads, compliance, dialer, webhook receiver, verifier and closer workspaces, recordings, transcripts, analytics, spend, permissions. Node + Fastify + React + SQLite, encrypted PII.
+3. **Twilio** — being built in as the phone layer *inside the CRM* (option C). Account exists; the number is not bought yet (hit a bug at purchase).
+4. **The people** — verifiers take the bot's transfers; licensed agents close. One person can now hold both roles.
+
+## Architecture
+
+- **Office Windows PC** `E:\final-expense-app` — development only. Claude Code runs here. Own test database. 8 GB RAM, so memory runs tight: one full test suite at a time, close unused Chrome tabs. SQL Server Express set to Manual to free memory.
+- **GitHub** — private repo, single source of truth for code. Never holds databases, recordings, secrets or customer data. CLAUDE.md rule: commit and push after every verified task, with a secrets check first.
+- **Personal Windows laptop** — the production/LAN server. Code `D:\final-expense-app`, data `D:\final-expense-data` (outside the git tree). 8 GB, SSD, runs only this app. LAN IP `10.120.19.237`, port `5180`. 8–10 office laptops use it in a browser.
+- **ngrok** — free static domain `lumpiness-alienate-coveting.ngrok-free.dev` gives Retell a public HTTPS webhook. Only the webhook route is exposed (own port 5181, every other path 404s, proven). Retell's dashboard webhook Test returns 200. **The free tier's 20,000 requests/month is not enough for 400 dials/day (~26,400 needed) — the Hobbyist plan is the answer, not yet bought.**
+
+Server update routine: `git pull`, `npm install`, `npm run build`, `npm run restart`. The build step is not optional.
+
+## What is built and working
+
+Everything from the original build (leads, DNC and per-state calling hours behind an unbypassable `scrub()` gate, dialer, signature-verified webhook, verifier checklist, closer queue with atomic claim lock and appointed states, sessions, analytics, recordings, live websocket updates), plus:
+
+- **Recording consent by state**, **data retention** with split windows, legal holds, purge log, per-customer file.
+- **Bot-leg transcripts** in the CRM, speaker by speaker, downloadable, admin-only bulk export redacted by default and audit-logged. Per-state transcript policy (store / store-and-flag / do-not-store), all states default to store-and-flag marked "unreviewed — awaiting attorney". A transcript is only stored if the recording disclosure was delivered; changing a setting never clears the unreviewed flag.
+- **TCPA litigator gate** — previously answered "clean" against an empty list, which is a control that reports a pass without running. Now says "no litigator list loaded" plainly, and going live is blocked unless a list is loaded or an admin types a confirmation, audit-logged.
+- **Licence expiry** per state, with warnings and claim blocking.
+- **Transfer failure handling** — unclaimed transfer released after 8 minutes, callback booked through `scrub()`, idempotent.
+- **Ownership** — found a real bug where an admin's save silently overwrote the person actually on the phone. Now only the current owner can edit; everyone else gets a live view-only notice, enforced server-side, and unsaved admin text is preserved.
+- **Spend tracking** — Retell sends real per-call cost, so spend is actual. Retell publishes no balance API, so I record top-ups and the app shows "estimated remaining", clearly labelled. No per-agent cost breakdown.
+- **Phone layer (option C), all six Phase 1 slices built and tested against a simulated Twilio:** browser phone for verifiers, incoming call auto-linked to the customer, routing to whoever is free, hold music with a 2-minute limit, transfer to a licensed agent with stay-or-leave, human-leg recording into the existing retention rules, and dialer pacing against free verifiers. Ring time per verifier is 20s and both limits are admin settings. A ringing browser nobody answers counts toward the hold limit and moves on to the next verifier, who is then switched to "not taking calls" with a notice.
+- **Verifier + Licensed Agent** — one person can hold both roles ("Also a licensed agent" tick). Nobody, including an admin, may take their own verified customer as the agent; an admin override with a typed reason exists for a small team, audit-logged and shown on the customer's file.
+- **Dashboard and Reports scoped per user**, enforced on the server. Fixed a close rate that read 75% when nothing had sold, rates from tiny samples, a "team median" of one person, double rounding, and four causes of figures changing between visits.
+- **Follow-ups** — own callbacks first, owner named on every row, a flag when two people have a callback for the same customer, server-enforced.
+- **Permissions grid** — admin-only screen where I decide which pages each role can see, live without restart, server-enforced, audit-logged, with plain-language warnings on risky pages. Admins always have everything.
+- **Call Workspace questions panel** rebuilt: at 1440×800 it went from 0 questions fully visible to 8–10, with sticky "still required" counts and the verifier's findings side by side.
+- Backups, auto-start Scheduled Task (written, not run), health check asserts the UI is served, test isolation hardened, and a test-cleanup bug fixed that had left 1,053 folders and 3.1 GB behind.
+
+## Decisions already made — please don't reverse these without asking
+
+- Re-pooling leads **grants** extra attempts, never resets `attempts_count`.
+- Nothing bypasses `scrub()` — no bulk action, no callback, no manual dial, no phone feature.
+- Whoever owns a call is the only one who can edit it; everyone else, including admins, is view-only.
+- Nobody verifies and closes the same customer, except by an audit-logged admin override.
+- Admins have everything; restrictions apply only to verifiers and licensed agents, and I control them from the Permissions grid.
+- Rates are never computed from samples too small to mean anything; users are compared against the team median, never ranked.
+- The app never shows a balance it cannot verify; an estimate is labelled as one.
+- Depth over coverage on compliance work — a thin version is worse than none.
+- Every prompt must end with an instruction to test and verify in the real browser and reconcile on-screen numbers against the database.
+- Claude Code cannot reach the laptop, my phone, or the Twilio and Retell dashboards. Anything there is MANUAL TEST REQUIRED, never claimed as passing.
+
+## Known issues and watch-outs
+
+- **Twilio number not bought** — hit a bug at purchase. Everything phone-related is blocked on this. Likely causes to check: account not upgraded, address or regulatory bundle required, or extra verification for a non-US account.
+- **Max Call Duration 9.1 minutes** — unknown whether it cuts a *transferred* call. A verifier plus agent conversation runs 20–40 minutes. Must be tested on the first real transfer.
+- **ngrok free tier too small** for 400 dials/day. Hobbyist plan needed.
+- **No recording disclosure in Sarah's prompt yet.** Without it, no bot transcript is ever stored. I said I'd add the line myself once the wording is reviewed.
+- **Sarah's prompt was rewritten** to stop over-questioning: confirm interest, ask only age, state, and self-or-someone-else, then transfer. Begin Message no longer uses `first_name` (it once spoke `{{first_name}}` out loud on a real call). One more test call is needed to confirm.
+- **Web (browser) test calls cannot test transfer** — Retell doesn't support it.
+- **Retell's own number** (~$2/month) would let me test everything up to and including the transfer landing on my mobile, the 9.1-minute question and audio quality from Pakistan — without Twilio. Worth doing while the Twilio bug is sorted.
+- Old VICIdial code and screens are still in the app and should be removed now that option C is chosen.
+
+## Work queued with Claude Code
+
+A nine-part queue, saved in the project's memory so it survives a lost session (say "continue the queue"): owner-changeable settings report and build (vendor cost per lead, transcript and call-payload retention, backup interval), `docs/OWNER_GUIDE.md`, record-click bug across every list, the recordings section, a full end-to-end rehearsal against simulated Twilio, a bug sweep including the old Weekends toggle, an admin-only Live Operations page (VICIdial-style real-time view built for a bot-dialled system), a measured performance pass with realistic data, and a final verification pass with an ordered go-live checklist. Plus `docs/DIALER_GUIDE.md` with screenshots taken from clean sample data.
+
+## Still outstanding — needs me
+
+- **Twilio:** resolve the number-purchase bug, buy a US number, then put the five values (Account SID, Auth token, API key SID, API key secret, phone number) into Settings & Audit → Retell on the laptop server. Never into GitHub or a chat.
+- **Retell number** for outbound dialling, and the transfer number pointed at Twilio.
+- Replace the 37 placeholder questions, 14 scripts and 8 objections with my agency's real approved script.
+- Recording disclosure line in Sarah's prompt.
+- Appointed states and licence expiry on every licensed agent.
+- Passwords on all accounts.
+- DNC registry account and list (telemarketing.donotcall.gov) — refreshed at least every 31 days or the app blocks going live. This is a legal requirement, not a preference.
+- Litigator list provider, or a typed acknowledgement of going live without one.
+- Lead vendor consent proof and an attribution-window agreement.
+- Attorney review of calling hours, recording and transcript consent wording, and lead consent.
+- ngrok Hobbyist plan.
+- Laptop server: the pending MANUAL TEST REQUIRED steps, the Scheduled Task, sleep settings, BitLocker on D:, daily copy of `backups\` to an external drive with the encryption key kept somewhere else. Consider a wired LAN connection for the server.
+- Reset the ngrok authtoken (it was pasted into a chat).
+- First real calls must be to numbers I own. Test mode is on by default and only allows an admin-managed allowlist.
+
+## Economics
+
+**A closed policy earns about $110**, not the $500–1,000 in the original handoff. That changes everything downstream:
+
+- Retell at 400 dials/day: roughly $465–815/month depending on the model.
+- Twilio phone layer: small by comparison, and cheaper than CloudTalk or 3CX (which were priced and rejected — the difference was about one policy a month).
+- **Leads dominate.** 400 dials/day at ~3 attempts per lead is ~2,900 fresh leads/month. At $10 each that's ~$29,000/month and break-even nearer 270 policies/month. My real lead cost and my leads-per-policy rate are the numbers that decide whether this campaign works.
+
+I raised scraping my own leads to avoid this cost and was advised against it: scraped data carries no consent, AI-voice calls need prior express written consent, penalties run $500–1,500 per call, and this industry has lawyers who look for exactly this. Legitimate cheaper routes: shared or aged leads (consent proof still required), bulk negotiation, or my own lead generation where I control the consent wording.
+
+## Legal framing I've already been told
+
+AI-voice calls fall under the TCPA's rules for artificial/prerecorded voices, so they need prior express written consent for cell numbers, and consent given to a lead generator generally doesn't transfer to me. Purchased and aged lists are the risky case. I need documented consent per lead, monthly DNC refreshes, and an attorney's review before running a real campaign. Claude is not my lawyer and should keep saying so.
