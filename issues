@@ -1,11 +1,18 @@
-dashboard is showing issues sometimes dashboard should be shown userwise on theri accounts for example Verifier1 will show only his stats in dashboard section lisenceAgent3 will show only his stats in dashboard 
+analytics -> cost per aquition ... values are change
 
-Retell Compaign section should not be visible in verifier and lisence again role it should only visible in Admin role 
+Click-to-call aur inbound call handling dono
 
-screen is not visible in lA screen cant see questions properly 
+Khud call krny ka option b ho verifier or lisence agent khd say b manual dialing kr skain or uski report admin dashboard a=mai visible hni chahye..admin portal mai dashboard mai section hna chahaye jahan manual dialing b show hon with username or yh visual analytics mai b sho hona chahye 
 
-If i click on record then it should redirect to that same record not on that page 
+main username wise decide kr skun k isko konsa page show krwana ha by default sb verfier or lisence agent ko same pages show ho lekin agr mai chahun k lisenceagent1 ko dashboard b dkhana ha jab k lisence agent 2 ko nai dkhana tw wh access b admin k pass ho sb users k liay
 
-for testing i created a customer and completed sale from one lisenceAgent its showing in dashbaord of admin and i already completed another old call that is not showing in admin dashboard 
 
-How to increase the speed of this app much ?
+VOIP intergtaion koi b ho Twillio , Twilio, Exotel, Plivo, ya jo bhi provider use karein ya koi b private provider
+
+3. License Verification Module (aapke business ke hisab se)
+
+Fields: License number, type, issuing authority, issue/expiry date
+Document upload option (license image/PDF)
+Verification status: Pending / Verified / Rejected / Needs Follow-up
+Verification checklist ya SOP steps agent ke liye
+Har verification ka audit trail (kis agent ne kab verify kiya)
