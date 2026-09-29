@@ -1,26 +1,8 @@
-analytics -> cost per aquition ... values are change
+settings & audit -> Lead Source at the end ...THis words covers calls by an AI or pre recorded calls while enabling this application crash
 
-live operations section mai  bug ha agr main for example lisenceagent say login kia tw yh admin dashboard main live operations main online show kry ga lekin jab mai dusry brwser mai isko logout kr dnga tw phr mjhy live operations main refresh krna parhta ha isko auto refresh pay lagao ta k mjhy bar bar refresh na krna pary or dusra bug yh ha k mainy same browser say verifier ki id login ki tw wh live operations mai nai dkhata one time jo login ki wh dakta ha 
+while toggling on Retell compaign-> compliance in last option Refresh mode ..while toggling on replace the list rather than adding to it web app crashed and also import list is button in the same section is not working  
 
-Click-to-call aur inbound call handling dono
+How to upload data in fresh leads ? No configurations or any upload option is visible 
 
-Khud call krny ka option b ho verifier or lisence agent khd say b manual dialing kr skain is k liay aik dialing keypad b hna chahye  or uski report admin dashboard a=mai visible hni chahye..admin portal mai dashboard mai section hna chahaye jahan manual dialing b show hon with username or yh visual analytics mai b sho hona chahye 
-
-main username wise decide kr skun k isko konsa page show krwana ha by default sb verfier or lisence agent ko same pages show ho lekin agr mai chahun k lisenceagent1 ko dashboard b dkhana ha jab k lisence agent 2 ko nai dkhana tw wh access b admin k pass ho sb users k liay
-
-lisence agent role mai routine or account number wala check theak ha wh asay hi rhny do lekin yh option b hna chahye k save ho sky or sale made hosky most of the time ho skta ha k application mai bug ho jiski wja say error aya or mere sari effor waste ho jae tw isi liay check lazmi ho lekin phr b sale made ka option available ho or wh file download b hosky
-
-VOIP intergtaion koi b ho Twillio , Twilio, Exotel, Plivo, ya jo bhi provider use karein ya koi b private provider
-
-3. License Verification Module (aapke business ke hisab se)
-
-Fields: License number, type, issuing authority, issue/expiry date
-Document upload option (license image/PDF)
-Verification status: Pending / Verified / Rejected / Needs Follow-up
-Verification checklist ya SOP steps agent ke liye
-Har verification ka audit trail (kis agent ne kab verify kiya)
-
-Agar final expense policy sell ho rahi hai to premium tracking, commission calculation
-
-
-users apni profile mai photo upload kr skain profile photo
+Manual dialer is not visible 
+Transfer to external Lisence agent is still not visible.....
