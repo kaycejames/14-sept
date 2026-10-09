@@ -1,7 +1,4 @@
-by typping zip code. state should be auto filled
+while transferring to the LisenceAgent ringtone sound is still not available 
 
-Insurance type is not mandatory call should be transferred without selection of insurance type 
+i logeed in from lisenceagent useraccount and from verifier i transfered a call to the lisence agent it was online but still CRM gave me error no one is available 
 
-i dont want to delete data from my database or from my CRM for rejected candidates so remove this check 
-
-When verifier transfers any call to the lisenceAgent then call sound be play if lisence agent is not seeing on screen it means our lead will be droped so a ringtone should be player and also with the HR notification a sound should alson play 
