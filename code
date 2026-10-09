@@ -1,6 +1,125 @@
-sudo apt install -y curl sqlite3
-cd ~/fe-workspace
-echo "=== vite change"; git diff vite.config.ts
-echo "=== env"; ls -la .env
-echo "=== how it was started"; history | grep -E "npm|vite|node|ngrok" | tail -30
-echo "=== ngrok"; ngrok version; ngrok config check
+sherry@sherry-MacBookPro10-1:~/fe-workspace$ cd ~/fe-workspace
+git pull
+npm install
+npm run refresh
+Username for 'https://github.com': kaycejames
+Password for 'https://kaycejames@github.com': 
+remote: Enumerating objects: 453, done.
+remote: Counting objects: 100% (453/453), done.
+remote: Compressing objects: 100% (120/120), done.
+remote: Total 323 (delta 268), reused 255 (delta 200), pack-reused 0 (from 0)
+Receiving objects: 100% (323/323), 133.00 KiB | 416.00 KiB/s, done.
+Resolving deltas: 100% (268/268), completed with 119 local objects.
+From https://github.com/kaycejames/fe-workspace
+   62fb38a..288451f  main       -> origin/main
+Updating 62fb38a..288451f
+error: Your local changes to the following files would be overwritten by merge:
+	vite.config.ts
+Please commit your changes or stash them before you merge.
+Aborting
+
+up to date in 1s
+
+> final-expense-assistant@2.0.0 refresh
+> node scripts/refresh.js
+
+
+Final Expense Assistant — refresh
+
+  1/3  building dist/web
+
+> final-expense-assistant@2.0.0 build
+> npm run typecheck && vite build
+
+
+> final-expense-assistant@2.0.0 typecheck
+> npm run typecheck:node && npm run typecheck:web && npm run typecheck:uitest
+
+
+> final-expense-assistant@2.0.0 typecheck:node
+> tsc -p tsconfig.node.json --noEmit
+
+
+> final-expense-assistant@2.0.0 typecheck:web
+> tsc -p tsconfig.web.json --noEmit
+
+
+> final-expense-assistant@2.0.0 typecheck:uitest
+> tsc -p tsconfig.uitest.json --noEmit
+
+vite v7.3.6 building client environment for production...
+✓ 319 modules transformed.
+../../dist/web/index.html                      1.36 kB │ gzip:   0.72 kB
+../../dist/web/assets/index-eFJ2ENS1.css      75.24 kB │ gzip:  14.43 kB
+../../dist/web/assets/twilio-DXseMN3Z.js       0.57 kB │ gzip:   0.37 kB │ map:     0.97 kB
+../../dist/web/assets/twilio-1BrN1NIn.js     181.05 kB │ gzip:  46.97 kB │ map: 1,047.17 kB
+../../dist/web/assets/index.m-yvIj7YVK.js    595.60 kB │ gzip: 156.97 kB │ map: 2,166.00 kB
+../../dist/web/assets/index-CIJ_IXid.js    1,235.79 kB │ gzip: 340.95 kB │ map: 4,145.67 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 8.52s
+  ok   dist/web rebuilt
+
+  2/3  stopping the server on port 5180
+       nothing was listening
+
+  3/3  starting the server
+
+  note open http://localhost:5180 — that is the current app.
+       Any separately packaged desktop build is NOT updated by this
+       command; it carries its own copy of the interface.
+
+
+> final-expense-assistant@2.0.0 start
+> cross-env NODE_ENV=production tsx src/server/index.ts
+
+[2026-10-09T18:34:33.777Z] INFO  Starting Final Expense Assistant :: {"node":"22.22.1","platform":"linux","dataDir":"/home/sherry/.local/share/final-expense-assistant","log":"/home/sherry/.local/share/final-expense-assistant/logs/server.log"}
+[2026-10-09T18:34:33.915Z] INFO  378 RPC operations registered
+[2026-10-09T18:34:33.918Z] INFO  Retell dialer loop started
+[2026-10-09T18:34:34.147Z] ERROR Retell webhook reachability :: "No RETELL_WEBHOOK_URL is set, so nothing checks that Retell can reach this machine. Set it to the public address you gave Retell — see docs/RETELL.md."
+[2026-10-09T18:34:34.220Z] INFO  Retell webhook receiver listening on 127.0.0.1:5181
+[2026-10-09T18:34:34.221Z] INFO  Listening on 0.0.0.0:5180 :: {"networkAccessible":true}
+
+  Final Expense Assistant
+  On this machine: http://localhost:5180
+  From other machines (preferred): http://sherry-MacBookPro10-1.local:5180
+  From other machines (if the name fails): http://192.168.100.39:5180
+  Retell webhook: http://127.0.0.1:5181/api/retell/webhook (loopback only — tunnel THIS port)
+  Data:  /home/sherry/.local/share/final-expense-assistant
+  Log:   /home/sherry/.local/share/final-expense-assistant/logs/server.log
+  Press Ctrl+C to stop.
+
+
+  ============================================================
+   THIS SERVER IS REACHABLE FROM THE NETWORK
+
+   HOST=0.0.0.0 exposes port 5180 on every network this machine is on.
+
+   There is no TLS: traffic is plain HTTP and anyone on the
+   same network can read it in transit, including customer
+   names, phone numbers and call transcripts.
+
+   Before leaving it this way:
+     - set a password on every account (Settings -> Users)
+     - use a trusted network, not a guest or public WiFi
+     - turn on the firewall and allow only port 5180
+
+   See docs/SERVER_SETUP.md.
+  ============================================================
+
+[2026-10-09T18:34:34.222Z] WARN  Server bound to 0.0.0.0; it is reachable from the network without TLS
+[2026-10-09T18:48:44.683Z] INFO  Customer outcome advanced :: {"customerId":8,"from":"in_progress","to":"transferred","reason":"session 8 transferred to a licensed agent"}
+[2026-10-09T18:48:44.691Z] INFO  Transfer of session 8 rings 0 agents :: {"why":"transfer","nobody":"No agent is taking calls right now. Assigned to LA: LIsenceAgent1, lisenceagent2."}
+[2026-10-09T18:49:37.463Z] INFO  Transfer of session 8 rings 0 agents :: {"why":"again","nobody":"No agent is taking calls right now. Assigned to LA: LIsenceAgent1, lisenceagent2."}
+[2026-10-09T18:49:59.033Z] INFO  Transfer of session 8 rings 0 agents :: {"why":"again","nobody":"No agent is taking calls right now. Assigned to LA: LIsenceAgent1, lisenceagent2."}
+[2026-10-09T18:50:02.918Z] INFO  lisenceagent2 claimed session 8
+[2026-10-09T18:51:01.270Z] INFO  Customer outcome advanced :: {"customerId":9,"from":"new","to":"in_progress","reason":"session 9 started"}
+[2026-10-09T18:52:07.304Z] INFO  Customer outcome advanced :: {"customerId":9,"from":"in_progress","to":"transferred","reason":"session 9 transferred to a licensed agent"}
+[2026-10-09T18:52:07.308Z] INFO  Transfer of session 9 rings 0 agents :: {"why":"transfer","nobody":"No agent is taking calls right now. Assigned to ME: LIsenceAgent1, lisenceagent2."}
+[2026-10-09T18:52:20.945Z] INFO  Transfer of session 9 rings 0 agents :: {"why":"again","nobody":"No agent is taking calls right now. Assigned to ME: LIsenceAgent1, lisenceagent2."}
+[2026-10-09T18:52:41.942Z] INFO  lisenceagent2 claimed session 9
+[2026-10-09T18:57:03.947Z] WARN  Handover not picked up after 499s; callback booked :: {"sessionId":8}
+
