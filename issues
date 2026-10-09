@@ -3,3 +3,6 @@ while transferring to the LisenceAgent ringtone sound is still not available
 i logeed in from lisenceagent useraccount and from verifier i transfered a call to the lisence agent it was online but still CRM gave me error no one is available 
 
 by typing zipcodes states are not entering automatically 
+
+
+if lisenceAgent picksup the call and close it then verifier and administratrator cant see that lisenceagent has ended that call this should be visible for both and also show in visual analytics
