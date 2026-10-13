@@ -1,8 +1,4 @@
-while transferring to the LisenceAgent ringtone sound is still not available 
+it was testing lisenceAgent1 was on call transfered by verifer1 then verifier1 again created a customer and this time again lisenceAgent1 picked up the call the picked up and older call was also picked up...it emans lisenceAGent was receiving two calls at a same time...fix this issue 
+what is happening to the transfered calls verifier should know if lisenceAgent hunged up the call then verifier should now live notification should be seen on admin or verifier screen.
 
-i logeed in from lisenceagent useraccount and from verifier i transfered a call to the lisence agent it was online but still CRM gave me error no one is available 
-
-by typing zipcodes states are not entering automatically 
-
-
-if lisenceAgent picksup the call and close it then verifier and administratrator cant see that lisenceagent has ended that call this should be visible for both and also show in visual analytics
+make a close button on lisenceAgent screens. if lisenceagent1 is on call and verifier1 trasnfered the call to the lisenceagent then ringtone will also be shown in lisenceagent1 screen who is on call so make a close button for him so he can cancel that window and can continue on the same call and that notification should be shown to the verifier and admin screen that :username has cancelled this call if that user is on call then it should automatically says because this :username is on call if lisenceagent is not on call then it should be writeen :username is not on call NOTE: this should be display on verifier and adminscreen too 
