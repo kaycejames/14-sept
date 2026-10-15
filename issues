@@ -4,3 +4,15 @@ what is happening to the transfered calls verifier should know if lisenceAgent h
 make a close button on lisenceAgent screens. if lisenceagent1 is on call and verifier1 trasnfered the call to the lisenceagent then ringtone will also be shown in lisenceagent1 screen who is on call so make a close button for him so he can cancel that window and can continue on the same call and that notification should be shown to the verifier and admin screen that :username has cancelled this call if that user is on call then it should automatically says because this :username is on call if lisenceagent is not on call then it should be writeen :username is not on call NOTE: this should be display on verifier and adminscreen too 
 
 i am delteing questions for verifier in configuration . while clicking on remove button it shows question removed but actually it stays there
+
+make a tracking system for which verifier lisenceAGent can track his sale and can see its status.Create a new navigating page on lisenceAgent and verifiers role for tracking and on admin dashboard it should be seen on visual analytics
+ make a chatbot in the CRM where everyuser can send message and can be visible to everyone with no page refreshing. if any user is sending private message to another user then this can be seen to everyone
+
+make a flow and clear bugs for transfering a call from verifier to lisenceAgent,verifier should hold the call for some minutes or seconds and then he can leave the call and then lisenceAgent will be on the call with the customer by leaving the call is not mean to drop the call from lisenceagent too if verifier is leaving the call then call should be connected with lisenceagent and customer and if verifier transfered the call to the lisenceagent while customer is on hold then verifier can listen the whole talks like its a confrence call everyine can speak listen same as for lisenceagent and external agent transfer process
+
+make a username role for compliance and also create a check for creating a new user . and complience person can listen everyone call which he wants
+
+i dont want to relly on twilio if i want to use vici dial i can also use that ... create a flow for ths too 
+
+
+how to track what AI bots are saying how they are behaving how would i listen to AI bots and how would i read captions for AI bots
