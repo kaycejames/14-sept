@@ -1,5 +1,8 @@
 it was testing lisenceAgent1 was on call transfered by verifer1 then verifier1 again created a customer and this time again lisenceAgent1 picked up the call the picked up and older call was also picked up...it emans lisenceAGent was receiving two calls at a same time...fix this issue 
+
 what is happening to the transfered calls verifier should know if lisenceAgent hunged up the call then verifier should now live notification should be seen on admin or verifier screen.
+
+[For my Information] how to manage inbound or outbound calls. i asked claude to make a dialer for me but how will it works ? how will i manage call backs. will one dialer can do all the stuffs or do i have to do something else
 
 make a close button on lisenceAgent screens. if lisenceagent1 is on call and verifier1 trasnfered the call to the lisenceagent then ringtone will also be shown in lisenceagent1 screen who is on call so make a close button for him so he can cancel that window and can continue on the same call and that notification should be shown to the verifier and admin screen that :username has cancelled this call if that user is on call then it should automatically says because this :username is on call if lisenceagent is not on call then it should be writeen :username is not on call NOTE: this should be display on verifier and adminscreen too 
 
