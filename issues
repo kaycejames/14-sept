@@ -6,7 +6,9 @@ make a close button on lisenceAgent screens. if lisenceagent1 is on call and ver
 i am delteing questions for verifier in configuration . while clicking on remove button it shows question removed but actually it stays there
 
 make a tracking system for which verifier lisenceAGent can track his sale and can see its status.Create a new navigating page on lisenceAgent and verifiers role for tracking and on admin dashboard it should be seen on visual analytics
- make a chatbot in the CRM where everyuser can send message and can be visible to everyone with no page refreshing. if any user is sending private message to another user then this can be seen to everyone
+
+
+make a chatbot in the CRM where everyuser can send message and can be visible to everyone with no page refreshing. if any user is sending private message to another user then this can be seen to everyone. Also in the chatbot make option for admin so he can create groups like if i have 4 agent for lisenceagents and i dont want to show everyone name there should be option for adding them all in groups and name them lisenceAgents. now verifier will tag only @lisenceagents and notification will be popup on every lisenceagent screen 
 
 make a flow and clear bugs for transfering a call from verifier to lisenceAgent,verifier should hold the call for some minutes or seconds and then he can leave the call and then lisenceAgent will be on the call with the customer by leaving the call is not mean to drop the call from lisenceagent too if verifier is leaving the call then call should be connected with lisenceagent and customer and if verifier transfered the call to the lisenceagent while customer is on hold then verifier can listen the whole talks like its a confrence call everyine can speak listen same as for lisenceagent and external agent transfer process
 
@@ -18,3 +20,10 @@ i dont want to relly on twilio if i want to use vici dial i can also use that ..
 how to track what AI bots are saying how they are behaving how would i listen to AI bots and how would i read captions for AI bots
 
 What is the calling process how automatic dialling will be done and how manual dialling will be done.. will it be done by one dialer that is on my CRM? if yes test the dialer is it capable enogh to do this stuffs
+
+show queue calls count when call is landed on my CRM while agent is on call. and turn this color in red but not eye frustrating so it should be clearly visible
+
+how to HUNGUPTHE call? no logical decions is made how agent is going to hung up the call no hungup button is visible for any agent.  also make a screen after clicking on hungup button there should be options like why this call is hunged up the use should select the reason and on backend in csv file that call should be saved for that tag so i can use those calls back and can dial again 
+
+its a tricky one and very and most important . what i want when call lands on my CRM if number is availble or if no is not available i want you to create a button right next to the phone number showing and name this button InfoLookUP. now what this button will do is that this is the website https://infolookup.site/ and what it does is that by entering the number this website shows some basic info that will be useful for the agent while dialing.... so i want by pressing this button the same info https://infolookup.site/ this website is showing same will be showin on my CRM so my agent dont have to go on another website for only checking the info 
+
