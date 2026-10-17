@@ -17,7 +17,7 @@ make a flow and clear bugs for transfering a call from verifier to lisenceAgent,
 
 make a username role for compliance and also create a check for creating a new user . and complience person can listen everyone call which he wants
 
-i dont want to relly on twilio if i want to use vici dial i can also use that ... create a flow for ths too 
+i dont want to relly on twilio if i want to use vici dial i can also use that ... create a flow for ths too without crashing my old work i want my old work remains same and just create a new section for VICI dial
 
 
 how to track what AI bots are saying how they are behaving how would i listen to AI bots and how would i read captions for AI bots
