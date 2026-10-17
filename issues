@@ -8,7 +8,7 @@ make a close button on lisenceAgent screens. if lisenceagent1 is on call and ver
 
 i am delteing questions for verifier in configuration . while clicking on remove button it shows question removed but actually it stays there
 
-make a tracking system for which verifier lisenceAGent can track his sale and can see its status.Create a new navigating page on lisenceAgent and verifiers role for tracking and on admin dashboard it should be seen on visual analytics
+make a tracking system for which verifier lisenceAGent can track his sale and can see its status.Create a new navigating page on lisenceAgent and verifiers role for tracking and on admin dashboard it should be seen on visual analytics. Also tell me what is the Journaya ID structure system created  in thi CRM
 
 
 make a chatbot in the CRM where everyuser can send message and can be visible to everyone with no page refreshing. if any user is sending private message to another user then this can be seen to everyone. Also in the chatbot make option for admin so he can create groups like if i have 4 agent for lisenceagents and i dont want to show everyone name there should be option for adding them all in groups and name them lisenceAgents. now verifier will tag only @lisenceagents and notification will be popup on every lisenceagent screen 
