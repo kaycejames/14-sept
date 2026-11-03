@@ -1,0 +1,127 @@
+# Final Expense AI Calling System — Handoff Summary
+
+Nov 3, 2026 · @Wajahat
+
+Paste this at the start of a new chat to bring Claude up to speed. Replaces all earlier handoffs (last one: Sep 30, 2026).
+
+## What I'm building
+
+An AI cold-calling system for a Final Expense (burial life insurance) campaign in the US, plus the CRM around it. An AI bot ("Sarah" on Retell) dials leads, qualifies them, and transfers live calls to a human verifier. The verifier then hands off either to our own licensed agent, who closes the sale in the CRM, or to an outside licensed agent/buyer in the US, who pays per qualified transfer.
+
+I'm a small business owner, not an engineer. I use Claude Code in VS Code on my office Windows PC to build, and I speak Roman Urdu. **Please reply in Roman Urdu.** In this chat I mostly ask Claude to write ready-to-paste prompts for Claude Code and to explain its reports.
+
+**Principle:** I must be able to run and change this system myself from the admin screens, without Claude Code. Anything an owner would reasonably want to change should be an admin setting. Admins have maximum legitimate control, including per-user access, within the law.
+
+**Privacy:** the claude.ai account is shared in the office. I use Incognito chats so others can't see them. Claude in Chrome extension was removed on purpose; don't suggest reconnecting it. Before closing the browser, ask Claude for a fresh handoff, because Incognito chats are lost.
+
+## Shape of the system
+
+1. **Retell AI** holds "Sarah" and places bot calls. Agent ID `agent_1106515681f404064d0d5c008e`, workspace "Smart". Kate voice, voicemail detection with hang-up, IVR hangup on, `end_call` and `transfer_call`. Model Claude 5 Sonnet (~$0.152/min); GPT-4.1 (~$0.13/min) worth testing. End on silence 31 s, ring 30 s. **Max call duration still 9.1 min — must be raised to ≥60.**
+2. **My app (the CRM)** — Node + Fastify + React + SQLite, encrypted PII. Decides who to call; every dial passes `scrub()`. Bot dials go out through Retell; manual dials through the active phone provider.
+3. **Phone providers** behind a phone-provider adapter: **Twilio** (default; account exists, **number not bought yet**) and **VICIdial** (second adapter, stage 1 only, see below).
+4. **People** — verifiers take the bot's transfers; our licensed agents close; outside buyers take external transfers; HR reviews bot opt-outs; Compliance role listens and reviews. One person can hold verifier + licensed agent roles.
+
+**Machines**
+
+- **Office PC** `E:\final-expense-app` — development, Claude Code, own test database. **8 GB RAM is the main bottleneck**: suites crash Chromium or get stopped when free memory drops below ~1 GB; Claude Code then reruns only the affected script. Upgrading to 16 GB is recommended. Local app on port **5180** in its own PowerShell window; restart with `npm run restart` after updates. Test data on this PC only: lead sources "2" and "5", buyer "ROnal", accounts licensedAgent1/licensedAgent2, customers Ann/Ben/Cal/Dee/Eve "Checkbefore/Checkafter", leads 555-0161/555-0162, wolf wallpaper test.
+- **GitHub** — private repo, single source of truth. Never holds databases, recordings, uploads, secrets or customer data. `package-lock.json` one-line local change is deliberately left uncommitted.
+- **Server laptop** — production/LAN. Code `D:\final-expense-app`, data `D:\final-expense-data`. LAN `10.120.19.237:5180`. Network cable, never sleep, lid = Do nothing, weekly disk check. **Not updated since before Oct; many migrations pending (database version 92 on office PC).**
+- **ngrok** — static domain `lumpiness-alienate-coveting.ngrok-free.dev`, port 5181 for Retell/Twilio webhooks only. Free tier too small for 400 dials/day — Hobbyist plan needed.
+
+**Server update routine** (restart never optional):
+1. Copy `D:\final-expense-data` to an external drive; keep `keystore.json` on a separate USB.
+2. `cd D:\final-expense-app` → `git pull` → `npm install` → `npm run restart`
+3. Browser: Ctrl + F5 at `http://10.120.19.237:5180`
+Any red text or "error" in PowerShell → stop and capture it. Test on office PC 5180 first, then the server.
+
+## What is built (all pushed; real calls are MANUAL TEST REQUIRED)
+
+Everything from the Sep 30 handoff (leads, DNC and per-state hours behind `scrub()`, dialer, verifier checklist, closer queue, recording consent, retention and legal holds, bot transcripts, litigator gate, licence verification, spend, permissions grid, per-user page access, sale form, premium and commission, external transfers, receipts, backups, bad-lead credits, phone adapter, older-server banner, human-only leads, inbound, test mode) plus:
+
+| Area | What it does | Commit |
+| --- | --- | --- |
+| Oct 30 change list, points 1–10 | Incl. keypad callbacks, advance callback reminders with sound (default 5 min), overdue callback reassign + optional auto-reassign (off), Close/decline on a ringing transfer card (busy agents never rung; verifier + admins told with server's reason) | … f9264b6, fa458b1, e8606a4, 1374ff3 |
+| Earlier queue | Fresh leads import with consent proof + CSV template; admin controls phase 2 (time-limited page grants; national-DNC exemption per lead with typed EXEMPT, proof, end date, never lifts internal/litigator lists); HR "Do-not-call list" page for bot opt-outs; Reset test number | pushed |
+| Remove buttons | Answered verifier question is switched off, not deleted, with a plain message; "Show switched-off questions"; same fix for Statuses, Internal DNC, demo data | 841784a |
+| Decline notices | Use login name | 19b625e |
+| Test fix | test-dashboard Monday-early-month date bug | abc4c87 |
+| Jornaya report | No LeadiD/TrustedForm stored previously | 7aa39c9 |
+| My sales + Analytics → Sales tracking | Read-only own sales for agents/verifiers, live status changes + notifications, no bank data; admin visuals vs team median, never ranked, rates only ≥20 sales; OWNER_GUIDE §23 | e2d6488, 311ec90 |
+| Consent certificate | Per-lead Jornaya LeadiD / TrustedForm field, validated, provider recorded, immutable once set, admin can add by hand (audited), in consent record and CSV template; "Vendor Lead ID" column mapping fixed | 8c1c982, ca3036c, dfc5306 |
+| Transfer flow | Customer on hold → three-way conference when agent/buyer answers; verifier minimum stay with countdown (internal: admin setting; external: buyer buffer); Leave ends only the verifier's leg; verifier dropping never drops the customer; `docs/TRANSFER_FLOW.md` has real-call test steps | 85f4fc4 |
+| Compliance role | Read-only; recordings/transcripts; live listen-only following the per-state consent table; every listen audited; new-user checks (unique username, role, password, licence entry for agents) | 85f4fc4 |
+| Calls-waiting count | Calm red badge, no flashing, live, hidden at 0, admin switch per role | 85f4fc4 |
+| Team chat | Everyone channel; direct messages **visible to everyone** (stated on screen); admin groups with @tags → popup for active members; bank/SSN block; edit/delete audited; panel closes on page change/outside click/Escape | 9a0f1b7, 40a6443 |
+| VICIdial stage 1 | Second adapter; Settings → Phone setup → VICIdial; provider switch (default Twilio, audited); only manual dial, hold, hang up, calls-waiting work; rest greyed with reason; Twilio's 48 contract checks unchanged; `docs/VICIDIAL_PLAN.md` | 2e488d5, bcb7708 |
+| VICIdial call-log check | Every 15 min compares VICIdial's call log with numbers `scrub()` cleared; red alert + audit for any uncleared dial; warning if log unreadable; recording off while VICIdial active | cf30bcd, 0da6f2c |
+
+Full suite: **133 scripts, ~55–60 min.** Last runs passed (latest split into 1–115 + remaining 18 because a memory crash killed the process).
+
+## Claude Code queue (as of this handoff)
+
+1. **Bot monitoring** — in progress: `docs/BOT_MONITORING.md` report; "Bot calls" page (recording with synced captions, click-to-jump, speed), Retell summary/sentiment, flags for review (opt-out request, "are you a robot", <10 s, talk-over, silence, admin list of forbidden phrases), live listen if Retell supports it, Analytics → Bot behaviour.
+2. **Background image** — Settings & Audit → Appearance: whole app / per role / per user, dim overlay for readability; first image "wolf" from `C:\Users\MY PC\Downloads`, stored in data folder, never in GitHub.
+3. **Calling process report + capacity test** — `docs/CALLING_PROCESS.md`; simulated 400 and 800 dials/day with 4 verifiers + 4 agents; Retell/Twilio/ngrok limits from their docs.
+4. Later: demo script (`npm run demo`), Part 9 final verification and go-live checklist.
+
+## Decisions — don't reverse without asking
+
+**Standing rules (unchanged):** nothing bypasses `scrub()`; re-pooling never resets `attempts_count`; only the call's owner edits it; nobody verifies and closes the same customer except audited admin override; admins have everything; no rates from tiny samples, compare to team median, never rank; never show an unverifiable figure, label estimates; depth over coverage on compliance; every prompt ends with real-browser test and DB reconciliation; anything on the server laptop, phones, Twilio/Retell/VICIdial dashboards is MANUAL TEST REQUIRED.
+
+**From earlier:** lead cost = price stamped at purchase; lead sources human-only until an AI-covering consent wording version is recorded; full bank numbers admin-only; external sales never become our policies; buyers never press a key; no external transfer while our agent is on the call; buyers pay per qualified transfer, our agents earn commission; recording master switch off by default, mandatory notice in all-party/unknown/unreviewed states, no global disable; no single switch turns off national DNC; drafts server-side only; HR adds bot opt-outs to DNC daily (no automatic capture); state DNC lists and per-state frequency limits are **not** built.
+
+**Added since Sep 30:**
+- Decline notices show the login name.
+- "Sold" = Approved/issued, First premium paid, Active. Submitted is pending; no Pending/Charged back statuses; chargebacks come from commission. Carrier-paid amounts admin-only; agents see their expected figure as an estimate.
+- Consent certificate is **not** required for bot calls (Q123: no, not now). Keep asking vendors for it.
+- Chat: there are no private messages; keep all messages; bank/SSN block catches 9 or 12–17 digits.
+- **VICIdial (owner reversed "Twilio only"):** Twilio stays default and its number keeps working; nothing more is built for VICIdial until I report a real manual-dial test; then order: transfer flow, recording, incoming, Compliance listening, call cost; VICIdial never plays its own recording notice instead of the CRM's per-state rules; VICIdial must never auto-dial (admin confirms campaign settings; call-log check alerts).
+- Old tests are never changed without asking; the only allowed change was making the adapter contract test provider-neutral.
+
+## Known issues and watch-outs
+
+- **Retell max duration 9.1 min** may cut transferred calls; raise to ≥60, check transfer method (SIP INVITE vs REFER). MORNING_QUESTIONS 32–34.
+- **Twilio number not bought**; Trust Hub business profile still to do. Everything phone-related tested only against simulators.
+- **Sarah's prompt has no recording disclosure**, and scripts still have placeholders. If Retell records bot calls, all-party states are a legal risk → attorney.
+- **VICIdial's `call_log_export` API name is unconfirmed**; ask the VICIdial provider which Non-Agent API function exports the call log and whether our API user can run it.
+- **Vendor CSV:** a "Lead ID" column with vendor numbers must be renamed "Vendor Lead ID", or values are refused as certificates. After the server update, check Retell Campaign → Leads for old vendor lead ids that look like certificates.
+- **Credit claims scroll jump**: fixed by the chat panel closing; watch for it in test:crawl.
+- **Server laptop**: earlier post-pull errors never diagnosed; after updating, licensed agents can't sell until licences are verified, and the bot dials nothing until a source is cleared for AI calls; first start migrates the DB and encrypts recordings.
+- Office 5180 goes stale after updates (red banner); restart.
+- Reset the ngrok authtoken (was pasted in a chat). Remove `keystore.json` from any drive used with old `robocopy /MIR`.
+- Receipt PDF not yet opened in Edge/Adobe (manual).
+
+**MORNING_QUESTIONS** (`docs/MORNING_QUESTIONS.md`): answered 10–23, 26, 119–123, 130–135. **Still open:** 24, 25, ~27–60 (incl. 32–34 Retell), 124–129 (transfer flow / Compliance listening defaults), plus any added by bot monitoring and the overnight items. Paste them to Claude in batches of 10.
+
+## Still outstanding — needs me
+
+**Phone and Retell:** buy Twilio number + Trust Hub; enter five Twilio values on the server only; Retell max duration ≥60 and transfer method screenshot; test bot → verifier → my mobile past the cap; ngrok Hobbyist + reset token; if using VICIdial: server, SIP carrier, DIDs, API user, then VICIDIAL_PLAN Part 3 manual test.
+**Server laptop:** update and diagnose errors; Scheduled Task, sleep, BitLocker on D:, cable; separate copy of the encryption key; prepare backup drive, Copy now, `npm run backup:check-keys -- E:\`; first real calls only to my own numbers via Test mode → Allowed numbers.
+**Business setup:** verify every agent's state licences (NIPR); commission settings; buyer list with rates and buffers; lead vendors' consent proof, wording version, certificates, return window; replace 37 placeholder questions, 14 scripts, 8 objections; recording disclosure in Sarah's prompt; passwords; office hours; ask carriers about recorded sales; HR daily bot opt-outs; create chat groups (e.g. @licensedagents).
+**Legal:** DNC registry account and 31-day refresh; litigator list provider; attorney review of calling hours, recording/transcript consent and the per-state table, lead consent wording, bot recording disclosure, Compliance live listening, and whether a Facebook-form inquiry allows calling a DNC number.
+**Hardware:** office PC RAM to 16 GB.
+
+## Economics
+
+Two revenue streams, combined in Analytics against lead cost, Retell and Twilio spend: outside buyers pay per qualified transfer (buffer reached, e.g. 120/220 s); our agents earn ~$110 per closed policy via commission, with advances and chargeback risk. Retell at 400 dials/day ~$465–815/month by model; after transfer the AI fee stops but telephony continues. Twilio bills both legs during human conversations. **Leads dominate:** ~2,900 fresh leads/month at ~$10 ≈ $29,000/month, reduced by bad-lead credits. Scraping leads advised against ($500–1,500 per call penalties); legitimate cheaper routes: own Facebook forms (human-only unless wording covers AI), aged/shared leads with consent proof, bulk negotiation.
+
+## Legal framing (Claude is not my lawyer and should keep saying so)
+
+AI-voice calls fall under TCPA artificial/prerecorded voice rules: prior express written consent for cell numbers; consent to a lead generator generally doesn't transfer. Human-dialled calls still need national DNC and calling hours. Calling someone who asked not to be called is heavily litigated ($500–1,500 per call). Recording: all-party states (e.g. CA, FL, IL, PA, WA) require telling everyone; recording without notice can be a crime. Selling requires a licence with Life authority in the customer's state. FCC Reassigned Numbers Database not built. Need documented consent per lead, monthly DNC refresh, and attorney review before a real campaign.
+
+## Working with Claude Code — lessons learned
+
+- Paste only when it shows "done HH:MM"; messages pasted while busy get lost (team chat was lost once). Check the reply says "saved" or refers to it.
+- Always add "existing features and compliance stay exactly as they are" to change requests.
+- Pasted output is often cut in the middle; scroll up for hashes and results.
+- When freeing memory, don't close Node.js processes (5180 and test scripts run on Node).
+- "Background command stopped because the system is running low on memory" usually means only the wrapper stopped; Claude Code checks whether the process is still alive.
+- Before leaving it overnight: close Chrome, sleep = Never, pause Windows Update, send the overnight prompt, wait 2–3 minutes for acknowledgement. Overnight rules to include:
+
+```
+- Do not wait for my approval at any point. Never stop and wait for me for any reason. Test everything yourself in the real browser, fix every bug you find, commit and push after each verified item, after a secrets check.
+- Memory is tight (8 GB). One thing at a time: no parallel subagents, no second browser, one test suite at a time. Read only the files you need; use grep instead of opening folders.
+- After each item run only its related tests; one full suite before pushing. If a script crashes from low memory, rerun only that script and say so.
+- If memory is low, wait, check free memory and retry. If a background task is stopped, check whether the process is still alive before restarting. If 5180 goes down, npm run restart.
+- Decisions only I can make go into docs/MORNING_QUESTIONS.md with the safest choice. Never invent rates, prices, limits, carrier terms or legal wording. No destructive actions, no force-push.
+- Morning report: pushed hashes, anything only local, test results, new
